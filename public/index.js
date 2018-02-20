@@ -3,7 +3,8 @@ var HomePage = {
   data: function() {
     return {
       people: [],
-      newPerson: {name: "", bio: "", bioVisible: true}
+      newPerson: {name: "", bio: ""},
+      errors: []
     };
   },
   created: function() {
@@ -13,10 +14,15 @@ var HomePage = {
   },
   methods: {
     addPerson: function() {
-      if (this.newPerson.name !== "" && this.newPerson.bio !== "") {
-        this.people.push(this.newPerson);
+      axios.post("/people",this.newPerson)
+      .then(function(response) {
+        this.people.push(response.data);
         this.newPerson = {name: "", bio: "", bioVisible: true};
-      }
+        this.errors = [];
+      }.bind(this))
+      .catch(function(error) {
+        this.errors = error.response.data.errors;
+      }.bind(this));
     },
     countPeople: function() {
       return this.people.length;
